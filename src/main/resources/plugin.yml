@@ -1,0 +1,6 @@
+name: BitsCraftingAPI
+version: ${project.version}
+main: me.evilterabite.bitscraftingapi.BitsCraftingAPI
+api-version: 1.16
+authors: [ evilterabite ]
+description: crafting api for bits plugins

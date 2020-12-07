@@ -1,0 +1,21 @@
+##Custom Recipes
+Recipes:
+  emerald_sword:
+    Shaped:
+      Bool: true
+      Layout:
+        - " E "
+        - " E "
+        - " S "
+      Items:
+        E: EMERALD
+        S: STICK
+    Result:
+      name: "&cEmerald Sword"
+      item: DIAMOND_SWORD
+      enchants:
+        - "sharpness:1"
+      lore:
+        - "Sharper than a diamond sword!"
+      amount: 1
+
