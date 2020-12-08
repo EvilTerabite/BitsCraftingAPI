@@ -1,8 +1,5 @@
-package me.evilterabite.bitscraftingapi.gui.crafting;
+package me.evilterabite.bitscraftingapi.api;
 
-import me.evilterabite.bitscraftingapi.BitsCraftingAPI;
-import me.evilterabite.bitscraftingapi.api.ItemHandler;
-import me.evilterabite.bitscraftingapi.files.recipes.RecipeConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -10,24 +7,43 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-public class RecipeHandler {
-    private static Plugin plugin = BitsCraftingAPI.getPlugin(BitsCraftingAPI.class);
-    private static FileConfiguration recipeConfig = RecipeConfig.get();
-
-
-    public static Boolean exists(String recipe){
-        Set<String> recipes = Objects.requireNonNull(recipeConfig.getConfigurationSection("Recipes")).getKeys(false);
-        return recipes.contains(recipe);
+public class ItemHandler {
+    public static ItemStack deserializeItem(String item, FileConfiguration configuration) {
+        String name = configuration.getString("Items.%item%.name".replace("%item%", item));
+        String itemName =  configuration.getString("Items.%item%.item".replace("%item%", item));
+        List<String> enchantList = configuration.getStringList("Items.%item%.enchants".replace("%item%", item));
+        int amount = configuration.getInt("Items.%item%.amount".replace("%item%", item));
+        List<String> lore = configuration.getStringList("Items.%item%.lore".replace("%item%", item));
+        assert itemName != null;
+        ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(itemName)), amount);
+        if(enchantList != null) {
+            for (String rawEnchant : enchantList) {
+                List<String> enchantSplit = Arrays.asList(rawEnchant.split(":"));
+                String level = enchantSplit.get(1);
+                String strEnchant = enchantSplit.get(0);
+                Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(strEnchant));
+                assert enchantment != null;
+                itemStack.addUnsafeEnchantment(enchantment, Integer.parseInt(level));
+            }
+        }
+        ItemMeta meta = itemStack.getItemMeta();
+        assert meta != null;
+        assert name != null;
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+        if(lore != null) {
+            meta.setLore(lore);
+        }
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
-    @Deprecated
-    public static ShapedRecipe createRecipe(String configRecipe) {
+
+
+    /*public static ShapedRecipe createRecipe(String configRecipe) {
         if(exists(configRecipe)) {
             Boolean shaped = recipeConfig.getBoolean("Recipes.%recipe%.Shaped.Bool".replace("%recipe%", configRecipe));
             List<String> layout = recipeConfig.getStringList("Recipes.%recipe%.Shaped.Layout".replace("%recipe%", configRecipe));
@@ -56,18 +72,5 @@ public class RecipeHandler {
         }
 
         return null;
-    }
-
-    public static List<ShapedRecipe> getRecipeList(){
-        List<ShapedRecipe> recipeList = new ArrayList<>();
-        Set<String> recipes = recipeConfig.getConfigurationSection("Recipes").getKeys(false);
-        for(String section:recipes) {
-            System.out.println(section);
-            ShapedRecipe recipe = createRecipe(section);
-            recipeList.add(recipe);
-        }
-
-
-        return recipeList;
-    }
+    }*/
 }
