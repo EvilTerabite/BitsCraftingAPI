@@ -25,7 +25,7 @@ public class RecipeHandler {
         return recipes.contains(recipe);
     }
 
-
+    @Deprecated
     public static ShapedRecipe createRecipe(String configRecipe) {
         if(exists(configRecipe)) {
             Boolean shaped = recipeConfig.getBoolean("Recipes.%recipe%.Shaped.Bool".replace("%recipe%", configRecipe));
@@ -33,7 +33,7 @@ public class RecipeHandler {
             Set<String> charSet = recipeConfig.getConfigurationSection("Recipes.%recipe%.Shaped.Items".replace("%recipe%", configRecipe)).getKeys(false);
             List<String> charList = new ArrayList<>();
             charList.addAll(charSet);
-            ItemStack result = deserializeItem(configRecipe);
+            ItemStack result = deserializeItem(configRecipe, recipeConfig);
             NamespacedKey namespacedKey = new NamespacedKey(plugin, configRecipe);
             ShapedRecipe recipe = new ShapedRecipe(namespacedKey, result);
             int varInt = charList.size();
@@ -57,14 +57,14 @@ public class RecipeHandler {
         return null;
     }
 
-    public static ItemStack deserializeItem(String recipe) {
-        String name = recipeConfig.getString("Recipes.%recipe%.Result.name".replace("%recipe%", recipe));
-        String itemName =  recipeConfig.getString("Recipes.%recipe%.Result.item".replace("%recipe%", recipe));
-        List<String> enchantList = recipeConfig.getStringList("Recipes.%recipe%.Result.enchants".replace("%recipe%", recipe));
-        int amount = recipeConfig.getInt("Recipes.%recipe%.Result.amount".replace("%recipe%", recipe));
-        List<String> lore = recipeConfig.getStringList("Recipes.%recipe%.Result.lore".replace("%recipe%", recipe));
+    public static ItemStack deserializeItem(String item, FileConfiguration configuration) {
+        String name = recipeConfig.getString("Items.%item%.name".replace("%item%", item));
+        String itemName =  recipeConfig.getString("Items.%item%.item".replace("%item%", item));
+        List<String> enchantList = recipeConfig.getStringList("Items.%item%.enchants".replace("%item%", item));
+        int amount = recipeConfig.getInt("Items.%item%.amount".replace("%item%", item));
+        List<String> lore = recipeConfig.getStringList("Items.%item%.lore".replace("%item%", item));
         assert itemName != null;
-        ItemStack item = new ItemStack(Objects.requireNonNull(Material.getMaterial(itemName)), amount);
+        ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(itemName)), amount);
         if(enchantList != null) {
             for (String rawEnchant : enchantList) {
                 List<String> enchantSplit = Arrays.asList(rawEnchant.split(":"));
@@ -72,18 +72,18 @@ public class RecipeHandler {
                 String strEnchant = enchantSplit.get(0);
                 Enchantment enchantment = EnchantmentWrapper.getByKey(NamespacedKey.minecraft(strEnchant));
                 assert enchantment != null;
-                item.addUnsafeEnchantment(enchantment, Integer.parseInt(level));
+                itemStack.addUnsafeEnchantment(enchantment, Integer.parseInt(level));
             }
         }
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         assert meta != null;
         assert name != null;
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
         if(lore != null) {
             meta.setLore(lore);
         }
-        item.setItemMeta(meta);
-        return item;
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
 
