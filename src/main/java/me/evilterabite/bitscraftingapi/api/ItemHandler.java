@@ -42,6 +42,40 @@ public class ItemHandler {
     }
 
 
+    public static void serializeItem(String configName, ItemStack item, FileConfiguration configuration) {
+        Map<Enchantment, Integer> enchantmentMap = item.getEnchantments();
+        List<Enchantment> enchantments = new ArrayList<>(enchantmentMap.keySet());
+        List<String> enchantStrings = new ArrayList<>();
+        for(Enchantment enchantment : enchantments) {
+            String name = String.valueOf(enchantment.getKey());
+            int level = enchantmentMap.get(enchantment);
+            String compiledEnchantment = name + ":" + level;
+            enchantStrings.add(compiledEnchantment);
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        configuration.set("Items.%item%.enchants".replace("%item%", configName), enchantStrings);
+        assert meta != null;
+        configuration.set("Items.%item%.name".replace("%item%", configName), meta.getDisplayName());
+        configuration.set("Items.%item%.item".replace("%item%", configName), String.valueOf(item.getType()));
+        configuration.set("Items.%item%.amount".replace("%item%", configName), item.getAmount());
+        configuration.set("Items.%item%.lore".replace("%item%", configName), meta.getLore());
+    }
+
+    public static void serEnchants(ItemStack item){
+        Map<Enchantment, Integer> enchantmentMap = item.getEnchantments();
+        List<Enchantment> enchantments = new ArrayList<>(enchantmentMap.keySet());
+        List<String> enchantStrings = new ArrayList<>();
+        for(Enchantment enchantment : enchantments) {
+            String name = String.valueOf(enchantment.getKey());
+            int level = enchantmentMap.get(enchantment);
+            StringBuilder compiledEnchantment = new StringBuilder(name);
+            compiledEnchantment.append(":");
+            compiledEnchantment.append(level);
+            enchantStrings.add(compiledEnchantment.toString());
+        }
+    }
+
 
     /*public static ShapedRecipe createRecipe(String configRecipe) {
         if(exists(configRecipe)) {
