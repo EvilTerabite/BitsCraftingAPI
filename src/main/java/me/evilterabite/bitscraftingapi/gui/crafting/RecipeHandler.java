@@ -2,20 +2,16 @@ package me.evilterabite.bitscraftingapi.gui.crafting;
 
 import me.evilterabite.bitscraftingapi.BitsCraftingAPI;
 import me.evilterabite.bitscraftingapi.files.recipes.RecipeConfig;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import org.ipvp.canvas.Menu;
 
 import java.util.*;
 
@@ -31,7 +27,6 @@ public class RecipeHandler {
 
 
     public static ShapedRecipe createRecipe(String configRecipe) {
-        Menu menu = CraftingGUI.getMenu();
         if(exists(configRecipe)) {
             Boolean shaped = recipeConfig.getBoolean("Recipes.%recipe%.Shaped.Bool".replace("%recipe%", configRecipe));
             List<String> layout = recipeConfig.getStringList("Recipes.%recipe%.Shaped.Layout".replace("%recipe%", configRecipe));
